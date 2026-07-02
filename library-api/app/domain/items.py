@@ -43,4 +43,53 @@ class LibraryItem(ABC):
         self._available_copies += 1
 
     
+### ----------------Items: Books, Magazines, DVD's--------------
+class Book(LibraryItem):
+    def __init__(self, title : str ,total_copies: int, author: str, isbn: str) -> None:
+        super().__init__(title, total_copies)
+        self._author=author
+        self._isbn=isbn
+
+    @property
+    def author(self) -> str:
+        return self._author
     
+    @property
+    def isbn(self) -> str:
+        return self._isbn
+    
+    def late_fee_per_day(self) -> float:
+        return 1.0
+    
+    def loan_period_days(self) -> int:
+        return 21
+    
+class Magazine(LibraryItem):
+    def __init__(self, title: str, total_copies: int, issue_number: int) -> None:
+        super().__init__(title,total_copies)
+        self._issue_number=issue_number
+
+    @property
+    def issue_number(self) -> int:
+        return self._issue_number
+    
+    def late_fee_per_day(self) -> float:
+        return 0.5
+    
+    def loan_period_days(self) -> int:
+        return 7
+        
+class DVD(LibraryItem):
+    def __init__(self, title: str, total_copies: int, runtime_minutes: int) -> None:
+        super().__init__(title,total_copies)
+        self._runtime_minutes=runtime_minutes
+
+    @property
+    def runtime_minutes(self):
+        return self._runtime_minutes
+    
+    def late_fee_per_day(self):
+        return 5.0
+    
+    def loan_period_days(self):
+        return 3
