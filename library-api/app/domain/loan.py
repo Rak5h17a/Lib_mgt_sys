@@ -41,13 +41,11 @@ class Loan:
 
     #-----------------behavior-----------------------------
     def is_overdue(self, as_of: date) ->bool:
-        # sourcery skip: assign-if-exp, reintroduce-else
         if self.is_returned:
             return False
         return as_of> self._due_on
     
     def days_overdue(self, as_of: date) -> int:
-        # sourcery skip: assign-if-exp, reintroduce-else
         if not self.is_overdue(as_of):
             return 0
         return (as_of - self._due_on).days
