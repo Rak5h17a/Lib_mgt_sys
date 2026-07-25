@@ -27,6 +27,14 @@ class LibraryItem(ABC):
     @abstractmethod
     def loan_period_days(self) ->int:
         ...
+
+    def to_dict(self)->dict:
+        return{
+            "title": self._title,
+            "total_copies":self._total_copies,
+            "available_copies":self._available_copies
+
+        }
     
     #shared behavior
     def due_date(self, borrowed_on:date) -> date:
@@ -57,7 +65,14 @@ class Book(LibraryItem):
     @property
     def isbn(self) -> str:
         return self._isbn
-    
+
+    def to_dict(self) ->dict:
+        data= super().to_dict()
+        data["type"]="book"
+        data["author"]=self._author
+        data["isbn"]=self._isbn
+        return data
+
     def late_fee_per_day(self) -> float:
         return 1.0
     
@@ -72,6 +87,12 @@ class Magazine(LibraryItem):
     @property
     def issue_number(self) -> int:
         return self._issue_number
+
+    def to_dict(self) ->dict:
+        data= super().to_dict()
+        data["type"]="magazine"
+        data["issue_number"]=self._issue_number
+        return data
     
     def late_fee_per_day(self) -> float:
         return 0.5
@@ -87,7 +108,12 @@ class DVD(LibraryItem):
     @property
     def runtime_minutes(self):
         return self._runtime_minutes
-    
+
+    def to_dict(self):
+        data= super().to_dict()
+        data["type"]="dvd"
+        data["runtime_minutes"]=self._runtime_minutes
+        return data    
     def late_fee_per_day(self):
         return 5.0
     
