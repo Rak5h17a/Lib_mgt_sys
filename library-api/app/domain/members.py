@@ -21,6 +21,13 @@ class Member(ABC):
     @property
     def current_loan_count(self) -> int:
         return len(self._borrowed_item_ids)
+
+    def to_dict(self) ->dict:
+        return {
+            "name":self._name,
+            "member_id":self._member_id,
+            "borrowed_item_ids": list(self.borrowed_item_ids),
+        }
     
     @abstractmethod
     def max_loans(self) -> int:
@@ -50,6 +57,11 @@ class StudentMember(Member):
     
     def loan_period_bonus_days(self):
         return 0
+
+    def to_dict(self) ->dict:
+        data= super().to_dict()
+        data["type"]="student"
+        return data
     
 class FacultyMember(Member):
     def max_loans(self):
@@ -57,3 +69,8 @@ class FacultyMember(Member):
     
     def loan_period_bonus_days(self):
         return 14
+
+    def to_dict(self) -> dict:
+        data= super().to_dict()
+        data["type"]="faculty"
+        return data
