@@ -19,6 +19,10 @@ class LibraryItem(ABC):
     @property
     def is_available(self) ->bool:
         return self._available_copies>0
+
+    @property 
+    def total_copies(self) -> int:
+        return self._total_copies
     
     @abstractmethod 
     def late_fee_per_day(self) ->float:
