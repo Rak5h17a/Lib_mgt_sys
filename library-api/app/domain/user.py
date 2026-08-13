@@ -1,7 +1,7 @@
 from app.schemas.user import UserRole
 
 class User:
-    def __init__(self, username: str, hashed_password: str, role, UserRole) -> None:
+    def __init__(self, username: str, hashed_password: str, role: UserRole) -> None:
         self._username = username
         self._hashed_password = hashed_password
         self._role = role
