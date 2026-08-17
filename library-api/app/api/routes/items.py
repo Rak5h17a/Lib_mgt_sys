@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.deps import get_item_service
 from app.services.item_service import ItemService
 from app.schemas.item import BookCreate, MagazineCreate,DVDCreate,ItemResponse
+from app.api.auth_deps import get_current_user, require_admin
+from app.domain.user import User
 
 router =  APIRouter(prefix="/items", tags=["items"])
 
@@ -16,17 +18,23 @@ def _to_response(item, item_id: str) -> ItemResponse:
     )
 
 @router.post("/books", response_model= dict, status_code=status.HTTP_201_CREATED)
-async def add_book(payload: BookCreate, service: ItemService = Depends(get_item_service)):
+async def add_book(payload: BookCreate,
+                   service: ItemService = Depends(get_item_service),
+                   current_user: User = Depends(require_admin)):
     item_id= await service.add_book(payload.title, payload.total_copies, payload.author, payload.isbn)
     return {"id": item_id}
 
 @router.post("/magazines", response_model= dict, status_code=status.HTTP_201_CREATED)
-async def add_magazine(payload: MagazineCreate, service: ItemService = Depends(get_item_service)):
+async def add_magazine(payload: MagazineCreate,
+                       service: ItemService = Depends(get_item_service),
+                       current_user: User = Depends(require_admin),):
     item_id= await service.add_magazine(payload.title, payload.total_copies, payload.issue_number)
     return {"id": item_id}
 
 @router.post("/dvds", response_model= dict, status_code= status.HTTP_201_CREATED)
-async def add_dvd(payload: DVDCreate, service: ItemService = Depends(get_item_service)):
+async def add_dvd(payload: DVDCreate, 
+                  service: ItemService = Depends(get_item_service),
+                  current_user: User = Depends(get_current_user)):
     item_id= await service.add_dvd(payload.title, payload.total_copies, payload.runtime_minutes)
     return {"id": item_id}
 

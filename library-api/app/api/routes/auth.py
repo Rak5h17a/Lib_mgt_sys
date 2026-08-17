@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.database import get_database
 from app.core.security import hash_password, verify_password, create_access_token
@@ -39,3 +40,18 @@ async def login(payload: UserLogin, repo: UserRepository = Depends(get_user_repo
     token=create_access_token(user_id=user_data["id"], role=user_data["role"])
     return {"access_token": token, "token_type": "bearer"}
 
+
+@router.post("/token")
+async def login_for_token(
+    form_data: OAuth2PasswordRequestForm =Depends(),
+    repo: UserRepository= Depends(get_user_repository),
+):
+    user_data= await repo.get_by_username(form_data.username)
+    if user_data is None:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    if not verify_password(form_data.password, user_data["hashed_password"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    token =create_access_token(user_id=user_data["id"], role=user_data["role"])
+    return {"access_token": token, "token_type": "bearer"}    
