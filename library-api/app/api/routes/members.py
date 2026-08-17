@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.deps import get_member_service
+from app.api.auth_deps import require_admin
 from app.services.member_service import MemberService
 from app.schemas.member import StudentCreate, FacultyCreate, MemberResponse
+from app.domain.user import User
 
 router = APIRouter(prefix="/members", tags=["members"])
 
@@ -17,13 +19,17 @@ def _to_response(member, member_id: str) -> MemberResponse:
     )
 
 @router.post("/students",response_model= dict, status_code=status.HTTP_201_CREATED )
-async def add_student(payload: StudentCreate, service: MemberService = Depends(get_member_service)):
+async def add_student(payload: StudentCreate, 
+                      service: MemberService = Depends(get_member_service),
+                      current_user: User = Depends(require_admin)):
     record_id= await service.add_student(payload.name,payload.member_id)
     return {"id": record_id}
 
 
 @router.post("/faculty",response_model=dict, status_code=status.HTTP_201_CREATED)
-async def add_faculty(payload: FacultyCreate, service: MemberService = Depends(get_member_service)):
+async def add_faculty(payload: FacultyCreate, 
+                      service: MemberService = Depends(get_member_service),
+                      current_user: User = Depends(require_admin)):
     record_id=await service.add_faculty(payload.name, payload.member_id)
     return {"id": record_id}
 
@@ -35,7 +41,9 @@ async def get_member(record_id: str, service : MemberService = Depends(get_membe
     return _to_response(member, record_id)
 
 @router.delete("/{record_id}", response_model= dict)
-async def remove_member(record_id: str, service: MemberService= Depends(get_member_service)):
+async def remove_member(record_id: str, 
+                        service: MemberService= Depends(get_member_service),
+                        current_user: User = Depends(require_admin)):
     deleted= await service.remove_member(record_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Member not found")
